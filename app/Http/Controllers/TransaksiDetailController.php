@@ -61,11 +61,11 @@ class TransaksiDetailController extends Controller
     public function destroy($id)
     {
         $transaksidetail = TransaksiDetail::findOrFail($id);
-
         $transaksi = Transaksi::with('transaksidetail')->findOrFail($transaksidetail->id_transaksi);
-        $transaksi->total_harga = $transaksi->details()->sum('subtotal');
-        // $transaksi->kembalian = bayar - total_harga;
+        $transaksi->total_harga = $transaksi->transaksidetail->sum('subtotal');
+        $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
         $transaksi->save();
+        $transaksidetail->delete();
 
         return redirect('transaksidetail/' . $transaksidetail->id_transaksi)->with('pesan', 'Berhasil menghapus data');
     }
