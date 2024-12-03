@@ -36,19 +36,22 @@ class TransaksiDetailController extends Controller
             'jumlah' => 'required|numeric',
         ]);
 
-        // Gunakan transaction
+        DB::beginTransaction();
         try {
             $transaksidetail = TransaksiDetail::findOrFail($id);
             $transaksidetail->nama_produk = $request->input('nama_produk');
             $transaksidetail->harga_satuan = $request->input('harga_satuan');
             $transaksidetail->jumlah = $request->input('jumlah');
             $transaksidetail->subtotal = $transaksidetail->harga_satuan * $transaksidetail->jumlah;
+            $transaksidetail->save();
 
             $transaksi = Transaksi::findOrFail($transaksidetail->id_transaksi);
-            $transaksi->total_harga = $transaksi->details()->sum('subtotal');
-            // $transaksi->kembalian = bayar - total_harga; // hapus rumus
+            $transaksi->total_harga = $transaksi->transaksidetail->sum('subtotal');
+            $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
+            $transaksi->save();
+            DB::commit();
 
-            return redirect('transaksidetail/' . $transaksidetail->id)->with('pesan', 'Berhasil mengubah data');
+            return redirect('transaksidetail/' . $transaksi->id)->with('pesan', 'Berhasil mengubah data');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors(['Transaction' => 'Gagal menambahkan data'])->withInput();
