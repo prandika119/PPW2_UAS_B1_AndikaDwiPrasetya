@@ -40,7 +40,7 @@
                                         <button onclick="return confirm('Yakin mau dihapus?')" type="submit"
                                             class="btn btn-danger btn-sm">Hapus</button>
                                     </form>
-                                    <a href="{{ route('transaksi.detail', $data->id) }}"
+                                    <a href="{{ route('transaksidetail.detail', $data->id) }}"
                                         class="btn btn-info btn-sm">Detail</a>
                                 </div>
                             </td>

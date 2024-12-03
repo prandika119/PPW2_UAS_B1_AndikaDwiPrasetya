@@ -82,7 +82,7 @@ class TransaksiController extends Controller
         $transaksi = Transaksi::findOrFail($id);
         $transaksi->bayar = $request->input('bayar');
         $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
-
+        $transaksi->save();
         return redirect('/transaksi')->with('pesan', 'Berhasil mengubah data');
     }
 
