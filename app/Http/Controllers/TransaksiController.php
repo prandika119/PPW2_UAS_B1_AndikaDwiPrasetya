@@ -12,7 +12,7 @@ class TransaksiController extends Controller
 {
     public function index()
     {
-        $transaksi = Transaksi::orderBy('tanggal_pembelian','DESC')->get();
+        $transaksi = Transaksi::orderBy('tanggal_pembelian', 'DESC')->get();
         return view('transaksi.index', compact('transaksi'));
     }
 
@@ -47,18 +47,18 @@ class TransaksiController extends Controller
             $transaksi->save();
 
             $total_harga = 0;
-            for ($i=1; $i<=3; $i++) {
+            for ($i = 1; $i <= 3; $i++) {
                 $transaksidetail->id_transaksi = $transaksi->id;
-                $transaksidetail->nama_produk = $request->input('nama_produk'.$i);
-                $transaksidetail->harga_satuan = $request->input('harga_satuan'.$i);
-                $transaksidetail->jumlah = $request->input('jumlah'.$i);
-                $transaksidetail->subtotal = $request->input('harga_satuan'.$i)*$request->input('jumlah'.$i);
+                $transaksidetail->nama_produk = $request->input('nama_produk' . $i);
+                $transaksidetail->harga_satuan = $request->input('harga_satuan' . $i);
+                $transaksidetail->jumlah = $request->input('jumlah' . $i);
+                $transaksidetail->subtotal = $request->input('harga_satuan' . $i) * $request->input('jumlah' . $i);
                 $total_harga += $transaksidetail->subtotal;
             }
             $transaksi->total_harga = $total_harga;
             $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
 
-            return redirect('transaksidetail/'.$transaksi->id)->with('pesan', 'Berhasil menambahkan data');
+            return redirect('transaksidetail/' . $transaksi->id)->with('pesan', 'Berhasil menambahkan data');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->withErrors(['Transaction' => 'Gagal menambahkan data'])->withInput();
@@ -71,7 +71,7 @@ class TransaksiController extends Controller
         return view('transaksi.edit', compact('transaksi'));
     }
 
-    public function update(Request $request)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'bayar' => 'required|numeric'
@@ -79,9 +79,9 @@ class TransaksiController extends Controller
 
         $transaksi = Transaksi::findOrFail($id);
         $transaksi->bayar = $request->input('bayar');
-        $transaksi->kembalian =
+        $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
 
-        return redirect('/transaksi') -> with('pesan', 'Berhasil mengubah data');
+        return redirect('/transaksi')->with('pesan', 'Berhasil mengubah data');
     }
 
     public function destroy()
