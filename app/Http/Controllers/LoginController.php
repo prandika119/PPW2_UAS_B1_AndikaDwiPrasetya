@@ -26,8 +26,7 @@ class LoginController extends Controller
             'password' => 'required'
         ]);
 
-        if(Auth::attempt($credentials))
-        {
+        if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->route('dashboard')->withSuccess('logged in');
         }
@@ -35,7 +34,6 @@ class LoginController extends Controller
         return back()->withErrors([
             'email' => 'email atau password salah',
         ])->onlyInput('email');
-
     }
 
     public function logout(Request $request)
@@ -45,5 +43,4 @@ class LoginController extends Controller
         $request->session()->regenerateToken();
         return redirect()->route('login')->withSuccess('logged out');
     }
-
 }
