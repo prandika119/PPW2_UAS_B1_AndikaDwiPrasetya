@@ -45,15 +45,17 @@ class TransaksiController extends Controller
             $transaksi->bayar = $request->input('bayar');
             $transaksi->kembalian = 0;
             $transaksi->save();
-
             $total_harga = 0;
+
             for ($i = 1; $i <= 3; $i++) {
+                $transaksidetail = new TransaksiDetail();
                 $transaksidetail->id_transaksi = $transaksi->id;
                 $transaksidetail->nama_produk = $request->input('nama_produk' . $i);
                 $transaksidetail->harga_satuan = $request->input('harga_satuan' . $i);
                 $transaksidetail->jumlah = $request->input('jumlah' . $i);
                 $transaksidetail->subtotal = $request->input('harga_satuan' . $i) * $request->input('jumlah' . $i);
                 $total_harga += $transaksidetail->subtotal;
+                $transaksidetail->save();
             }
             $transaksi->total_harga = $total_harga;
             $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
@@ -84,10 +86,10 @@ class TransaksiController extends Controller
         return redirect('/transaksi')->with('pesan', 'Berhasil mengubah data');
     }
 
-    public function destroy()
+    public function destroy($id)
     {
         $transaksi = Transaksi::findOrFail($id);
-
+        $transaksi->delete();
         return redirect('/transaksi');
     }
 }
