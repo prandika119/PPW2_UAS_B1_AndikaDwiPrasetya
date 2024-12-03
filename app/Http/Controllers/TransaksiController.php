@@ -37,7 +37,7 @@ class TransaksiController extends Controller
             'jumlah3' => 'required|numeric',
         ]);
 
-        // Gunakan transaction
+        DB::beginTransaction();
         try {
             $transaksi = new Transaksi();
             $transaksi->tanggal_pembelian = $request->input('tanggal_pembelian');
@@ -59,7 +59,8 @@ class TransaksiController extends Controller
             }
             $transaksi->total_harga = $total_harga;
             $transaksi->kembalian = $transaksi->bayar - $transaksi->total_harga;
-
+            $transaksi->save();
+            DB::commit();
             return redirect('transaksidetail/' . $transaksi->id)->with('pesan', 'Berhasil menambahkan data');
         } catch (\Exception $e) {
             DB::rollback();
