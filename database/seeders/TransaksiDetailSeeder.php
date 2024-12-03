@@ -36,7 +36,7 @@ class TransaksiDetailSeeder extends Seeder
                     'nama_produk' => $faker->productName,
                     'harga_satuan' => $hargaSatuan,
                     'jumlah' => $jumlah,
-                    'subtotal'
+                    'subtotal' => $subtotal,
                 ]);
             }
 
